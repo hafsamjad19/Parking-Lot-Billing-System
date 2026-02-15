@@ -1,0 +1,163 @@
+                                               PARKING LOT BILLING SYSTEM CODE
+
+#include <stdio.h>
+#include <time.h>
+#include <string.h>
+
+struct ParkingRecord {
+    char NumberPlate[8];
+    int SlotNo;
+    time_t EntryTime;
+    time_t ExitTime;
+    int IsOccupied;
+};
+
+int main()
+{
+    printf("\n\t\t\t\tHuda Azeem-BS-25-IB-109394\n:");
+      printf("\n\t\t\t\tHafsa Amjad-BS-25-RB-100562\n:");
+    printf("\t\t\t\t\t\t~~~PARKING LOT BILLING SYSTEM~~~");
+
+    int choice, i, found;
+    float hours, fee;
+    float rate=50;
+    float feepermin=5.0;
+    float totalrevenue=0.0;
+    int maxslots=50;
+    int availableslots=maxslots;
+    char plate[8];
+
+    struct ParkingRecord cars[50];
+
+    for(i=0; i<50; i++)
+        cars[i].IsOccupied = 0;
+
+        printf("\nTotal slots available: %d\n", maxslots);
+
+        while(1){
+                printf("\n");
+            printf("\n1. Vehicle Entry");
+             printf("\n2. Vehicle Exit(Generate Bill)");
+             printf("\n3. View vehicle slot's current occupancy status. ");
+              printf("\n4. View the total revenue of 1 session.");
+              printf("\n5. Exit Program");
+              printf("\n Enter your choice(1-5):");
+
+              scanf("%d", &choice);
+
+              if(choice==1){
+                printf("\n\t\t=====VEHICLE ENTRY SELECTED=====");
+
+                if(availableslots<=0){
+                    printf("\nParking Lot is full. No more slots are available.");
+                    continue;
+                }
+                printf("\nEnter Vehicle number plate(use caps only):");
+                scanf("%s", plate);
+
+     int AlreadyParked=0;
+    for(i=0; i<50; i++){
+        if(cars[i].IsOccupied == 1 && strcmp(cars[i].NumberPlate, plate)==0)
+        {
+
+           AlreadyParked=1;
+           break;
+    }
+              }
+              if(AlreadyParked){
+                printf("Vehicle with plate %s is already parked in the parking lot.", plate);
+             continue;
+              }
+               for(i=0; i<50; i++){
+        if(cars[i].IsOccupied==0)
+            {
+            strcpy(cars[i].NumberPlate, plate);
+
+            cars[i].EntryTime=time(NULL);
+
+            cars[i].SlotNo= i+1;
+            cars[i].IsOccupied=1;
+           availableslots--;
+           printf("Vehicle has entered successfully");
+           printf("\nAssigned Slot Number: %d", cars[i].SlotNo);
+           printf("\nEntry time: %s", ctime(&cars[i].EntryTime));
+           printf("\nAvailable slots remaining are: %d", availableslots);
+           break;
+              }
+                }
+              }
+
+    else if(choice==2){
+                printf("\n\t\t=====VEHICLE EXIT SELECTED=====");
+
+                if(availableslots>=maxslots){
+                    printf("\nNo Vehicles are in the parking lot \n.");
+                    continue;
+                }
+                printf("\nEnter Vehicle number plate(use caps only):");
+                scanf("%s", plate);
+                found=-1;
+
+    for(i=0; i<50; i++){
+        if(cars[i].IsOccupied == 1 && strcmp(cars[i].NumberPlate, plate)==0)
+            {
+           found=i;
+           break;
+            }
+    }
+            if(found==-1)
+            {
+                printf("\nVehicle with number plate %s not found\n", plate);
+                continue;
+
+            }
+            cars[found].ExitTime=time(NULL);
+           hours=(float)difftime(cars[found].ExitTime, cars[found]. EntryTime)/3600;
+           fee=hours*rate;
+           if(fee<feepermin)
+            fee=feepermin;
+           printf("\n\t\t=====RECEIPT======");
+           printf("\nVehicle has exited successfully\n");
+           printf("\nPlate Number: %s", cars[found].NumberPlate);
+           printf("Slot Number: %d\n", cars[found].SlotNo);
+           printf("Entry time: %s", ctime(&cars[found].EntryTime));
+           printf("Exit time: %s", ctime(&cars[found].ExitTime));
+           printf("Total Parking Time= %.4fhours\n", hours);
+           printf("Parking Fee= Rs.%.2f\n", fee);
+           printf("\n");
+
+           totalrevenue+=fee;
+           cars[found].IsOccupied=0;
+             availableslots++;
+              }
+
+              else if(choice==3)
+              {
+                  printf("\n\t\t=====Slot Occupancy Status======");
+                  printf("\nSlot\tPlate Number\tStatus");
+                  for(i=0; i<50; i++)
+                  {
+        if(cars[i].IsOccupied)
+                  printf("\n%d\t%s\t\tOccupied",cars[i].SlotNo, cars[i].NumberPlate);
+              }
+             printf("\nAvailable Slots: %d", availableslots);
+              }
+
+              else if(choice==4)
+                {
+                printf("\n Total Revenue Generated in this session: Rs. %.2f", totalrevenue);
+                }
+
+              else if(choice==5){
+                 printf("\nThank you for using our system.");
+                printf("\nGoodbye.");
+                break;
+              }
+
+              else
+              {
+                  printf("\nInvalid Choice. Select from 1-5");
+              }
+            }
+ return 0;
+     }
